@@ -1,6 +1,7 @@
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { useState } from 'react';
+
 export default function SearchBox(){
     let [city,setCity] = useState('');
     const API_URL = 'https://api.openweathermap.org/data/2.5/weather';
@@ -10,6 +11,9 @@ export default function SearchBox(){
         let jsonResponse = await response.json();
         console.log(jsonResponse);
         let result = {
+            city : jsonResponse.name,
+            longitude : jsonResponse.coord.lon,
+            latitude : jsonResponse.coord.lat,
             feels_like : jsonResponse.main.feels_like,
             temp : jsonResponse.main.temp,
             temp_min : jsonResponse.main.temp_min,
