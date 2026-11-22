@@ -2,14 +2,16 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { useState } from 'react';
 
-export default function SearchBox(){
+export default function SearchBox({updateInfo}){
     let [city,setCity] = useState('');
+    let [error,setError] = useState(false);
     const API_URL = 'https://api.openweathermap.org/data/2.5/weather';
     const API_KEY = '93af46793aa08c20fa872daa7265dc95';
     async function getInformation(){
+        try{
+        
         let response = await fetch(`${API_URL}?q=${city}&appid=${API_KEY}&units=metric`);
         let jsonResponse = await response.json();
-        console.log(jsonResponse);
         let result = {
             city : jsonResponse.name,
             longitude : jsonResponse.coord.lon,
@@ -22,15 +24,28 @@ export default function SearchBox(){
             weather : jsonResponse.weather[0].description
         }
         console.log(result);
+        setError(false);
+        return result;
+        }
+        catch(error){
+            throw error;
+        }
     }
     function handleChange(event){
         setCity(event.target.value)
     }
-    function handleSubmit(event){
-        event.preventDefault();
-        console.log(city);
-        setCity('');
-        getInformation();
+    async function handleSubmit(event){
+        try{
+            event.preventDefault();
+            console.log(city);
+            setCity('');
+            getInformation();
+            let newInfo = await getInformation();
+            updateInfo(newInfo);
+        }
+        catch(error ){
+            setError(true);
+        }
     }
     return(
         <>
@@ -40,6 +55,7 @@ export default function SearchBox(){
                 <br /><br />
                 <Button type='submit' variant="contained">Search</Button>
                 </form>
+                {error && <p className='text-red-600'>No such place exists!</p>}
             </div>
         </>
     )
